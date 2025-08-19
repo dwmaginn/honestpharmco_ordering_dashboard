@@ -2,7 +2,7 @@
 INSERT OR IGNORE INTO users (email, password_hash, company_name, contact_name, phone, role, approved) 
 VALUES (
   'admin@honestpharmco.com',
-  '$2b$10$YfH8DI9JvEjq5YVn0LIFvOoF7d/aRmYosG0e2e7GknPHPo7XhX.gG',
+  'c4f8d4397e3173ffaf2de3dda245a4053cd865d2016f8f2dc089ec6b5d38c481',
   'Honest Pharmco',
   'System Admin',
   '555-0100',
@@ -14,7 +14,7 @@ VALUES (
 INSERT OR IGNORE INTO users (email, password_hash, company_name, contact_name, phone, role, approved)
 VALUES (
   'demo@customer.com',
-  '$2b$10$g3.xuYa6q1iG2n9xn4lX5OXKuGkPuNhzh.symRsjge5sTEICPmxpS',
+  'a4790461bbb796fd0226ca2d4e6ce3c4c462179d81c33c64bed902c315fb66f2',
   'Demo Dispensary',
   'John Doe',
   '555-0101',
