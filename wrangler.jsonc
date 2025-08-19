@@ -1,34 +1,25 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "webapp",
-  "compatibility_date": "2025-08-19",
+  "name": "honest-pharmco-ordering",
+  "compatibility_date": "2024-01-01",
   "pages_build_output_dir": "./dist",
-  "compatibility_flags": [
-    "nodejs_compat"
+  "compatibility_flags": ["nodejs_compat"],
+  
+  // D1 Database for user authentication and inventory
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "honest-pharmco-production",
+      "database_id": "your-database-id" // Will be replaced after creation
+    }
+  ],
+
+  // KV for session storage
+  "kv_namespaces": [
+    {
+      "binding": "SESSIONS",
+      "id": "your-kv-id", // Will be replaced after creation
+      "preview_id": "your-kv-preview-id"
+    }
   ]
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
-  // "ai": {
-  //   "binding": "AI"
-  // }
 }
