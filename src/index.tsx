@@ -440,27 +440,35 @@ app.get('/', (c) => {
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <style>
-          /* Custom gradient for Honest Pharmco branding */
+          /* Custom styles for Honest Pharmco branding */
           .honest-gradient {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+          }
+          .silver-gradient {
             background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
           }
-          .honest-text-gradient {
-            background: linear-gradient(135deg, #808080 0%, #606060 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+          .text-silver {
+            color: #C0C0C0;
           }
-          .leaf-icon {
-            color: #6B7280;
+          .logo-shadow {
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+          }
+          .btn-silver {
+            background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+            color: #000;
+          }
+          .btn-silver:hover {
+            background: linear-gradient(135deg, #D0D0D0 0%, #909090 100%);
           }
         </style>
     </head>
     <body class="bg-gray-50">
         <div id="app">
             <!-- Loading state -->
-            <div class="min-h-screen flex items-center justify-center">
+            <div class="min-h-screen flex items-center justify-center bg-black">
                 <div class="text-center">
-                    <i class="fas fa-cannabis text-6xl leaf-icon mb-4 animate-pulse"></i>
-                    <h1 class="text-2xl font-bold text-gray-800">Loading...</h1>
+                    <img src="/static/honest-pharmco-logo.png" alt="Honest Pharmco" class="h-32 mx-auto mb-4 logo-shadow">
+                    <div class="text-silver text-xl animate-pulse">Loading...</div>
                 </div>
             </div>
         </div>

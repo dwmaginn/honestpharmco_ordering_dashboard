@@ -1,5 +1,30 @@
 // Honest Pharmco Ordering System - Frontend Application
 
+// Add custom styles to document
+const customStyles = document.createElement('style');
+customStyles.innerHTML = `
+  .honest-gradient {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  }
+  .silver-gradient {
+    background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+  }
+  .text-silver {
+    color: #C0C0C0;
+  }
+  .logo-shadow {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+  }
+  .btn-silver {
+    background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+    color: #000;
+  }
+  .btn-silver:hover {
+    background: linear-gradient(135deg, #D0D0D0 0%, #909090 100%);
+  }
+`;
+document.head.appendChild(customStyles);
+
 class HonestPharmcoApp {
   constructor() {
     this.token = localStorage.getItem('token');
@@ -35,17 +60,15 @@ class HonestPharmcoApp {
     return `
       <div class="min-h-screen bg-gray-50">
         <!-- Header with Honest Pharmco Branding -->
-        <header class="bg-gradient-to-r from-gray-800 to-gray-600 shadow-lg">
+        <header class="bg-black shadow-lg border-b-2 border-gray-800">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
+            <div class="flex justify-between items-center h-24">
               <!-- Logo and Brand -->
               <div class="flex items-center space-x-4">
-                <div class="bg-white rounded-full p-2 shadow-md">
-                  <i class="fas fa-cannabis text-3xl text-gray-700"></i>
-                </div>
-                <div>
-                  <h1 class="text-2xl font-bold text-white tracking-wider">HONEST PHARM CO</h1>
-                  <p class="text-xs text-gray-300 tracking-widest">LOCALLY GROWN • FAMILY OWNED</p>
+                <img src="/static/honest-pharmco-logo.png" alt="Honest Pharmco" class="h-16 logo-shadow">
+                <div class="hidden md:block">
+                  <p class="text-xs text-gray-400 tracking-widest">LOCALLY GROWN • FAMILY OWNED</p>
+                  <p class="text-xs text-gray-500 mt-1">Licensed NY State Cultivator</p>
                 </div>
               </div>
               
@@ -61,11 +84,11 @@ class HonestPharmcoApp {
                       </span>
                     </button>
                   ` : ''}
-                  <button id="logoutBtn" class="px-4 py-2 text-sm bg-white text-gray-800 rounded-md hover:bg-gray-100 transition">
+                  <button id="logoutBtn" class="px-4 py-2 text-sm btn-silver rounded-md transition font-semibold">
                     Logout
                   </button>
                 ` : `
-                  <button id="showLoginBtn" class="px-4 py-2 text-sm bg-white text-gray-800 rounded-md hover:bg-gray-100 transition">
+                  <button id="showLoginBtn" class="px-4 py-2 text-sm btn-silver rounded-md transition font-semibold">
                     Sign In / Register
                   </button>
                 `}
@@ -75,14 +98,14 @@ class HonestPharmcoApp {
         </header>
 
         <!-- Sub-header Banner -->
-        <div class="bg-gradient-to-r from-green-600 to-green-500 text-white py-3">
+        <div class="silver-gradient text-black py-3 border-b border-gray-600">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
-              <p class="text-sm font-medium">
+              <p class="text-sm font-bold">
                 <i class="fas fa-award mr-2"></i>
-                Premium Quality Cannabis Products • Licensed NY State Cultivator (OCM-CULT-24-000099)
+                Premium Quality Cannabis Products • OCM-CULT-24-000099
               </p>
-              <p class="text-sm">
+              <p class="text-sm font-medium">
                 <i class="fas fa-map-marker-alt mr-1"></i>
                 621 E. Maple Ave, Newark, NY
               </p>
@@ -104,18 +127,16 @@ class HonestPharmcoApp {
         ${!isAdmin ? this.renderCartModal() : ''}
 
         <!-- Footer -->
-        <footer class="bg-gray-800 text-white py-8 mt-16">
+        <footer class="bg-black text-white py-8 mt-16 border-t-2 border-gray-800">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
-              <div class="flex justify-center items-center mb-4">
-                <i class="fas fa-cannabis text-2xl mr-3"></i>
-                <span class="text-xl font-bold tracking-wider">HONEST PHARM CO</span>
-              </div>
+              <img src="/static/honest-pharmco-logo.png" alt="Honest Pharmco" class="h-20 mx-auto mb-4 logo-shadow">
               <p class="text-sm text-gray-400 mb-2">From Seed to Shelf - Quality You Can Trust</p>
+              <p class="text-xs text-gray-500 mb-4">Licensed NY State Cannabis Cultivator • OCM-CULT-24-000099</p>
               <div class="flex justify-center space-x-4 mt-4">
-                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
-                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook text-xl"></i></a>
-                <a href="#" class="text-gray-400 hover:text-white"><i class="fas fa-envelope text-xl"></i></a>
+                <a href="https://www.instagram.com/honestpharmco" target="_blank" class="text-gray-400 hover:text-silver transition"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://www.facebook.com/honestpharmcoNY" target="_blank" class="text-gray-400 hover:text-silver transition"><i class="fab fa-facebook text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-silver transition"><i class="fas fa-envelope text-xl"></i></a>
               </div>
             </div>
           </div>
@@ -138,9 +159,7 @@ class HonestPharmcoApp {
           
           <!-- Logo -->
           <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-gray-700 to-gray-600 rounded-full shadow-lg mb-3">
-              <i class="fas fa-cannabis text-3xl text-white"></i>
-            </div>
+            <img src="/static/honest-pharmco-logo.png" alt="Honest Pharmco" class="h-16 mx-auto mb-3 opacity-80">
             <p class="text-sm text-gray-600">Sign in to place orders</p>
           </div>
 
@@ -172,7 +191,7 @@ class HonestPharmcoApp {
                   placeholder="••••••••">
               </div>
               <button type="submit"
-                class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold rounded-md hover:from-green-700 hover:to-green-600 transition duration-200">
+                class="w-full py-2 px-4 btn-silver font-bold rounded-md transition duration-200 shadow">
                 Sign In
               </button>
             </form>
@@ -231,7 +250,7 @@ class HonestPharmcoApp {
                 </div>
               </div>
               <button type="submit"
-                class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold rounded-md hover:from-green-700 hover:to-green-600 transition duration-200">
+                class="w-full py-2 px-4 btn-silver font-bold rounded-md transition duration-200 shadow">
                 Register
               </button>
             </form>
@@ -293,11 +312,12 @@ class HonestPharmcoApp {
       <div class="space-y-8">
         ${!isLoggedIn ? `
           <!-- Call to Action Banner -->
-          <div class="bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-lg p-8 text-white">
+          <div class="bg-black rounded-lg shadow-xl p-8 text-white border border-gray-800">
             <div class="max-w-3xl mx-auto text-center">
-              <h2 class="text-3xl font-bold mb-4">Welcome to Honest Pharm Co Online Ordering</h2>
-              <p class="text-lg mb-6">Browse our premium cannabis products below. Sign in to place orders and access exclusive features.</p>
-              <button onclick="app.showLoginModal()" class="px-8 py-3 bg-white text-green-600 font-bold rounded-lg hover:bg-gray-100 transition">
+              <img src="/static/honest-pharmco-logo.png" alt="Honest Pharmco" class="h-20 mx-auto mb-4 logo-shadow">
+              <h2 class="text-3xl font-bold mb-4 text-silver">Welcome to Our Online Ordering System</h2>
+              <p class="text-lg mb-6 text-gray-300">Browse our premium cannabis products below. Sign in to place orders and access exclusive features.</p>
+              <button onclick="app.showLoginModal()" class="px-8 py-3 btn-silver font-bold rounded-lg transition shadow-lg">
                 Sign In to Order
               </button>
             </div>
@@ -361,7 +381,7 @@ class HonestPharmcoApp {
               </div>
               <textarea id="orderNotes" placeholder="Order notes (optional)" 
                 class="w-full p-2 border rounded mb-4" rows="3"></textarea>
-              <button id="checkoutBtn" class="w-full py-3 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold rounded hover:from-green-700 hover:to-green-600">
+              <button id="checkoutBtn" class="w-full py-3 btn-silver font-bold rounded transition shadow-lg">
                 Place Order
               </button>
             </div>
@@ -561,12 +581,12 @@ class HonestPharmcoApp {
             <span class="text-xl font-bold text-green-600">$${product.price}</span>
             ${isLoggedIn ? `
               <button onclick="app.addToCart(${product.id})" 
-                class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 text-white text-sm font-semibold rounded hover:from-green-700 hover:to-green-600 transition">
+                class="px-4 py-2 btn-silver text-sm font-bold rounded transition shadow">
                 Add to Cart
               </button>
             ` : `
               <button onclick="app.showLoginModal()" 
-                class="px-4 py-2 bg-gray-200 text-gray-600 text-sm font-semibold rounded hover:bg-gray-300 transition">
+                class="px-4 py-2 bg-gray-800 text-gray-300 text-sm font-semibold rounded hover:bg-gray-700 transition">
                 Login to Order
               </button>
             `}
