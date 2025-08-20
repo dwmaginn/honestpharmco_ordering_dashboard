@@ -316,9 +316,13 @@ class HonestPharmcoApp {
             <div class="max-w-3xl mx-auto text-center">
               <img src="/static/honest-pharmco-logo.png" alt="Honest Pharmco" class="h-20 mx-auto mb-4 logo-shadow">
               <h2 class="text-3xl font-bold mb-4 text-silver">Welcome to Our Online Ordering System</h2>
-              <p class="text-lg mb-6 text-gray-300">Browse our premium cannabis products below. Sign in to place orders and access exclusive features.</p>
+              <p class="text-lg mb-4 text-gray-300">Browse our premium cannabis products below.</p>
+              <div class="flex items-center justify-center space-x-2 mb-6">
+                <i class="fas fa-lock text-silver"></i>
+                <p class="text-md text-gray-400">Sign in to view pricing and place orders</p>
+              </div>
               <button onclick="app.showLoginModal()" class="px-8 py-3 btn-silver font-bold rounded-lg transition shadow-lg">
-                Sign In to Order
+                Sign In for Pricing & Ordering
               </button>
             </div>
           </div>
@@ -343,8 +347,8 @@ class HonestPharmcoApp {
         <!-- Products Grid -->
         <div>
           <h2 class="text-2xl font-bold text-gray-800 mb-6">
-            ${isLoggedIn ? 'Available Products' : 'Browse Our Products'}
-            ${!isLoggedIn ? '<span class="text-sm font-normal text-gray-600 ml-2">(Login required to order)</span>' : ''}
+            ${isLoggedIn ? 'Available Products' : 'Product Catalog'}
+            ${!isLoggedIn ? '<span class="text-sm font-normal text-gray-600 ml-2"><i class="fas fa-lock mr-1"></i>Login required for pricing</span>' : ''}
           </h2>
           <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- Products will be loaded here -->
@@ -578,16 +582,20 @@ class HonestPharmcoApp {
             ` : ''}
           </div>
           <div class="flex justify-between items-center pt-3 border-t">
-            <span class="text-xl font-bold text-green-600">$${product.price}</span>
             ${isLoggedIn ? `
+              <span class="text-xl font-bold text-green-600">$${product.price}</span>
               <button onclick="app.addToCart(${product.id})" 
                 class="px-4 py-2 btn-silver text-sm font-bold rounded transition shadow">
                 Add to Cart
               </button>
             ` : `
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-lock text-gray-400"></i>
+                <span class="text-sm text-gray-500 font-medium">Sign in to see pricing</span>
+              </div>
               <button onclick="app.showLoginModal()" 
                 class="px-4 py-2 bg-gray-800 text-gray-300 text-sm font-semibold rounded hover:bg-gray-700 transition">
-                Login to Order
+                Sign In
               </button>
             `}
           </div>
