@@ -10,178 +10,236 @@ class HonestPharmcoApp {
   }
 
   init() {
+    this.loadProducts(); // Load products immediately for all users
     this.render();
-    if (this.token && this.user) {
-      this.loadDashboard();
-    }
   }
 
   render() {
     const app = document.getElementById('app');
     
-    if (!this.token || !this.user) {
-      app.innerHTML = this.renderLoginPage();
-      this.attachLoginHandlers();
-    } else {
-      app.innerHTML = this.renderDashboard();
-      this.attachDashboardHandlers();
-      this.loadProducts();
+    // Show main dashboard for everyone, login controls in header
+    app.innerHTML = this.renderMainLayout();
+    this.attachHandlers();
+    
+    if (this.user && this.user.role === 'admin') {
+      this.loadAdminData();
+    } else if (this.user) {
+      this.loadMyOrders();
     }
   }
 
-  renderLoginPage() {
-    return `
-      <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-        <div class="max-w-md w-full mx-4">
-          <!-- Logo and Title -->
-          <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
-              <i class="fas fa-cannabis text-4xl leaf-icon"></i>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-800">HONEST PHARMCO</h1>
-            <p class="text-gray-600 mt-2">Ordering System</p>
-          </div>
-
-          <!-- Login/Register Card -->
-          <div class="bg-white shadow-xl rounded-lg p-8">
-            <div class="mb-6">
-              <div class="flex border-b">
-                <button id="loginTab" class="flex-1 py-2 text-center font-semibold text-gray-800 border-b-2 border-gray-800">
-                  Sign In
-                </button>
-                <button id="registerTab" class="flex-1 py-2 text-center font-semibold text-gray-500">
-                  Register
-                </button>
-              </div>
-            </div>
-
-            <!-- Login Form -->
-            <div id="loginForm">
-              <form id="loginFormElement" class="space-y-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input type="email" name="email" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-                    placeholder="your@email.com">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                  <input type="password" name="password" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-                    placeholder="••••••••">
-                </div>
-                <button type="submit"
-                  class="w-full py-2 px-4 bg-gray-800 text-white font-semibold rounded-md hover:bg-gray-700 transition duration-200">
-                  Sign In
-                </button>
-              </form>
-            </div>
-
-            <!-- Register Form -->
-            <div id="registerForm" class="hidden">
-              <form id="registerFormElement" class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
-                    <input type="text" name="company_name" required
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Name *</label>
-                    <input type="text" name="contact_name" required
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                  <input type="email" name="email" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Password * (min 6 characters)</label>
-                  <input type="password" name="password" required minlength="6"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                  <input type="tel" name="phone"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                  <input type="text" name="address"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                    <input type="text" name="city"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
-                    <input type="text" name="state" maxlength="2"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">ZIP</label>
-                    <input type="text" name="zip"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500">
-                  </div>
-                </div>
-                <button type="submit"
-                  class="w-full py-2 px-4 bg-gray-800 text-white font-semibold rounded-md hover:bg-gray-700 transition duration-200">
-                  Register
-                </button>
-              </form>
-            </div>
-
-            <!-- Messages -->
-            <div id="authMessage" class="mt-4"></div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  renderDashboard() {
-    const isAdmin = this.user.role === 'admin';
+  renderMainLayout() {
+    const isLoggedIn = !!this.token && !!this.user;
+    const isAdmin = this.user?.role === 'admin';
     
     return `
       <div class="min-h-screen bg-gray-50">
-        <!-- Header -->
-        <header class="bg-white shadow-sm border-b">
+        <!-- Header with Honest Pharmco Branding -->
+        <header class="bg-gradient-to-r from-gray-800 to-gray-600 shadow-lg">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-              <div class="flex items-center">
-                <i class="fas fa-cannabis text-2xl leaf-icon mr-3"></i>
-                <h1 class="text-xl font-bold text-gray-800">HONEST PHARMCO</h1>
-              </div>
+            <div class="flex justify-between items-center h-20">
+              <!-- Logo and Brand -->
               <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-600">Welcome, ${this.user.contact_name || this.user.email}</span>
-                ${!isAdmin ? `
-                  <button id="cartBtn" class="relative p-2 text-gray-600 hover:text-gray-800">
-                    <i class="fas fa-shopping-cart text-xl"></i>
-                    <span id="cartCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      ${this.cart.length}
-                    </span>
+                <div class="bg-white rounded-full p-2 shadow-md">
+                  <i class="fas fa-cannabis text-3xl text-gray-700"></i>
+                </div>
+                <div>
+                  <h1 class="text-2xl font-bold text-white tracking-wider">HONEST PHARM CO</h1>
+                  <p class="text-xs text-gray-300 tracking-widest">LOCALLY GROWN • FAMILY OWNED</p>
+                </div>
+              </div>
+              
+              <!-- User Controls -->
+              <div class="flex items-center space-x-4">
+                ${isLoggedIn ? `
+                  <span class="text-sm text-gray-200">Welcome, ${this.user.contact_name || this.user.email}</span>
+                  ${!isAdmin ? `
+                    <button id="cartBtn" class="relative p-2 text-white hover:text-gray-200 transition">
+                      <i class="fas fa-shopping-cart text-xl"></i>
+                      <span id="cartCount" class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        ${this.cart.length}
+                      </span>
+                    </button>
+                  ` : ''}
+                  <button id="logoutBtn" class="px-4 py-2 text-sm bg-white text-gray-800 rounded-md hover:bg-gray-100 transition">
+                    Logout
                   </button>
-                ` : ''}
-                <button id="logoutBtn" class="px-4 py-2 text-sm bg-gray-800 text-white rounded-md hover:bg-gray-700">
-                  Logout
-                </button>
+                ` : `
+                  <button id="showLoginBtn" class="px-4 py-2 text-sm bg-white text-gray-800 rounded-md hover:bg-gray-100 transition">
+                    Sign In / Register
+                  </button>
+                `}
               </div>
             </div>
           </div>
         </header>
+
+        <!-- Sub-header Banner -->
+        <div class="bg-gradient-to-r from-green-600 to-green-500 text-white py-3">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-medium">
+                <i class="fas fa-award mr-2"></i>
+                Premium Quality Cannabis Products • Licensed NY State Cultivator (OCM-CULT-24-000099)
+              </p>
+              <p class="text-sm">
+                <i class="fas fa-map-marker-alt mr-1"></i>
+                621 E. Maple Ave, Newark, NY
+              </p>
+            </div>
+          </div>
+        </div>
 
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           ${isAdmin ? this.renderAdminDashboard() : this.renderCustomerDashboard()}
         </main>
 
+        <!-- Login Modal -->
+        <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          ${this.renderLoginModal()}
+        </div>
+
         <!-- Cart Modal -->
         ${!isAdmin ? this.renderCartModal() : ''}
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-8 mt-16">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+              <div class="flex justify-center items-center mb-4">
+                <i class="fas fa-cannabis text-2xl mr-3"></i>
+                <span class="text-xl font-bold tracking-wider">HONEST PHARM CO</span>
+              </div>
+              <p class="text-sm text-gray-400 mb-2">From Seed to Shelf - Quality You Can Trust</p>
+              <div class="flex justify-center space-x-4 mt-4">
+                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white"><i class="fas fa-envelope text-xl"></i></a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    `;
+  }
+
+  renderLoginModal() {
+    return `
+      <div class="bg-white rounded-lg max-w-md w-full mx-4">
+        <div class="p-6">
+          <!-- Close button -->
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Welcome to Honest Pharm Co</h2>
+            <button id="closeLoginBtn" class="text-gray-500 hover:text-gray-700">
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          
+          <!-- Logo -->
+          <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-gray-700 to-gray-600 rounded-full shadow-lg mb-3">
+              <i class="fas fa-cannabis text-3xl text-white"></i>
+            </div>
+            <p class="text-sm text-gray-600">Sign in to place orders</p>
+          </div>
+
+          <!-- Tabs -->
+          <div class="mb-6">
+            <div class="flex border-b">
+              <button id="loginTab" class="flex-1 py-2 text-center font-semibold text-gray-800 border-b-2 border-green-600">
+                Sign In
+              </button>
+              <button id="registerTab" class="flex-1 py-2 text-center font-semibold text-gray-500">
+                Register
+              </button>
+            </div>
+          </div>
+
+          <!-- Login Form -->
+          <div id="loginForm">
+            <form id="loginFormElement" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" name="email" required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="your@email.com">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" name="password" required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="••••••••">
+              </div>
+              <button type="submit"
+                class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold rounded-md hover:from-green-700 hover:to-green-600 transition duration-200">
+                Sign In
+              </button>
+            </form>
+          </div>
+
+          <!-- Register Form -->
+          <div id="registerForm" class="hidden">
+            <form id="registerFormElement" class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
+                  <input type="text" name="company_name" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Contact Name *</label>
+                  <input type="text" name="contact_name" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <input type="email" name="email" required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password * (min 6 characters)</label>
+                <input type="password" name="password" required minlength="6"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input type="tel" name="phone"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <input type="text" name="address"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <input type="text" name="city"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                  <input type="text" name="state" maxlength="2"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">ZIP</label>
+                  <input type="text" name="zip"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+              </div>
+              <button type="submit"
+                class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold rounded-md hover:from-green-700 hover:to-green-600 transition duration-200">
+                Register
+              </button>
+            </form>
+          </div>
+
+          <!-- Messages -->
+          <div id="authMessage" class="mt-4"></div>
+        </div>
       </div>
     `;
   }
@@ -191,24 +249,24 @@ class HonestPharmcoApp {
       <div class="space-y-8">
         <!-- Admin Controls -->
         <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-bold text-gray-800 mb-4">Admin Controls</h2>
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Admin Dashboard</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="border rounded-lg p-4">
-              <h3 class="font-semibold mb-2">Upload Inventory</h3>
-              <input type="file" id="inventoryFile" accept=".xlsx,.xls" class="mb-2">
-              <button id="uploadInventoryBtn" class="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+            <div class="border rounded-lg p-4 bg-gradient-to-br from-blue-50 to-white">
+              <h3 class="font-semibold mb-2 text-blue-800">Upload Inventory</h3>
+              <input type="file" id="inventoryFile" accept=".xlsx,.xls" class="mb-2 text-sm">
+              <button id="uploadInventoryBtn" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 <i class="fas fa-upload mr-2"></i>Upload
               </button>
             </div>
-            <div class="border rounded-lg p-4">
-              <h3 class="font-semibold mb-2">Pending Approvals</h3>
-              <div id="pendingUsers" class="text-2xl font-bold text-orange-600">0</div>
-              <button id="viewPendingBtn" class="mt-2 text-blue-600 hover:underline">View Users</button>
+            <div class="border rounded-lg p-4 bg-gradient-to-br from-orange-50 to-white">
+              <h3 class="font-semibold mb-2 text-orange-800">Pending Approvals</h3>
+              <div id="pendingUsers" class="text-3xl font-bold text-orange-600">0</div>
+              <button id="viewPendingBtn" class="mt-2 text-orange-600 hover:underline">View Users →</button>
             </div>
-            <div class="border rounded-lg p-4">
-              <h3 class="font-semibold mb-2">Total Orders</h3>
-              <div id="totalOrders" class="text-2xl font-bold text-green-600">0</div>
-              <button id="viewOrdersBtn" class="mt-2 text-blue-600 hover:underline">View Orders</button>
+            <div class="border rounded-lg p-4 bg-gradient-to-br from-green-50 to-white">
+              <h3 class="font-semibold mb-2 text-green-800">Total Orders</h3>
+              <div id="totalOrders" class="text-3xl font-bold text-green-600">0</div>
+              <button id="viewOrdersBtn" class="mt-2 text-green-600 hover:underline">View All →</button>
             </div>
           </div>
         </div>
@@ -229,21 +287,57 @@ class HonestPharmcoApp {
   }
 
   renderCustomerDashboard() {
+    const isLoggedIn = !!this.token && !!this.user;
+    
     return `
       <div class="space-y-8">
+        ${!isLoggedIn ? `
+          <!-- Call to Action Banner -->
+          <div class="bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-lg p-8 text-white">
+            <div class="max-w-3xl mx-auto text-center">
+              <h2 class="text-3xl font-bold mb-4">Welcome to Honest Pharm Co Online Ordering</h2>
+              <p class="text-lg mb-6">Browse our premium cannabis products below. Sign in to place orders and access exclusive features.</p>
+              <button onclick="app.showLoginModal()" class="px-8 py-3 bg-white text-green-600 font-bold rounded-lg hover:bg-gray-100 transition">
+                Sign In to Order
+              </button>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Product Categories -->
+        <div class="flex flex-wrap gap-4 justify-center">
+          <button class="px-6 py-2 bg-white border-2 border-gray-300 rounded-full hover:border-green-500 transition">
+            <i class="fas fa-joint mr-2"></i>Pre-rolls
+          </button>
+          <button class="px-6 py-2 bg-white border-2 border-gray-300 rounded-full hover:border-green-500 transition">
+            <i class="fas fa-tint mr-2"></i>Tinctures
+          </button>
+          <button class="px-6 py-2 bg-white border-2 border-gray-300 rounded-full hover:border-green-500 transition">
+            <i class="fas fa-wind mr-2"></i>Vapes
+          </button>
+          <button class="px-6 py-2 bg-white border-2 border-gray-300 rounded-full hover:border-green-500 transition">
+            <i class="fas fa-cookie-bite mr-2"></i>Edibles
+          </button>
+        </div>
+
         <!-- Products Grid -->
         <div>
-          <h2 class="text-2xl font-bold text-gray-800 mb-6">Available Products</h2>
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">
+            ${isLoggedIn ? 'Available Products' : 'Browse Our Products'}
+            ${!isLoggedIn ? '<span class="text-sm font-normal text-gray-600 ml-2">(Login required to order)</span>' : ''}
+          </h2>
           <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- Products will be loaded here -->
           </div>
         </div>
 
-        <!-- My Orders -->
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-bold text-gray-800 mb-4">My Orders</h2>
-          <div id="myOrdersList"></div>
-        </div>
+        ${isLoggedIn ? `
+          <!-- My Orders -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">My Recent Orders</h2>
+            <div id="myOrdersList"></div>
+          </div>
+        ` : ''}
       </div>
     `;
   }
@@ -267,7 +361,7 @@ class HonestPharmcoApp {
               </div>
               <textarea id="orderNotes" placeholder="Order notes (optional)" 
                 class="w-full p-2 border rounded mb-4" rows="3"></textarea>
-              <button id="checkoutBtn" class="w-full py-3 bg-green-600 text-white font-semibold rounded hover:bg-green-700">
+              <button id="checkoutBtn" class="w-full py-3 bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold rounded hover:from-green-700 hover:to-green-600">
                 Place Order
               </button>
             </div>
@@ -277,23 +371,36 @@ class HonestPharmcoApp {
     `;
   }
 
-  attachLoginHandlers() {
-    // Tab switching
+  attachHandlers() {
+    // Login/Logout
+    document.getElementById('showLoginBtn')?.addEventListener('click', () => {
+      this.showLoginModal();
+    });
+
+    document.getElementById('closeLoginBtn')?.addEventListener('click', () => {
+      this.hideLoginModal();
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      this.logout();
+    });
+
+    // Tab switching in login modal
     document.getElementById('loginTab')?.addEventListener('click', () => {
       document.getElementById('loginForm').classList.remove('hidden');
       document.getElementById('registerForm').classList.add('hidden');
-      document.getElementById('loginTab').classList.add('text-gray-800', 'border-b-2', 'border-gray-800');
+      document.getElementById('loginTab').classList.add('text-gray-800', 'border-b-2', 'border-green-600');
       document.getElementById('loginTab').classList.remove('text-gray-500');
-      document.getElementById('registerTab').classList.remove('text-gray-800', 'border-b-2', 'border-gray-800');
+      document.getElementById('registerTab').classList.remove('text-gray-800', 'border-b-2', 'border-green-600');
       document.getElementById('registerTab').classList.add('text-gray-500');
     });
 
     document.getElementById('registerTab')?.addEventListener('click', () => {
       document.getElementById('registerForm').classList.remove('hidden');
       document.getElementById('loginForm').classList.add('hidden');
-      document.getElementById('registerTab').classList.add('text-gray-800', 'border-b-2', 'border-gray-800');
+      document.getElementById('registerTab').classList.add('text-gray-800', 'border-b-2', 'border-green-600');
       document.getElementById('registerTab').classList.remove('text-gray-500');
-      document.getElementById('loginTab').classList.remove('text-gray-800', 'border-b-2', 'border-gray-800');
+      document.getElementById('loginTab').classList.remove('text-gray-800', 'border-b-2', 'border-green-600');
       document.getElementById('loginTab').classList.add('text-gray-500');
     });
 
@@ -323,13 +430,6 @@ class HonestPharmcoApp {
         zip: formData.get('zip')
       });
     });
-  }
-
-  attachDashboardHandlers() {
-    // Logout
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      this.logout();
-    });
 
     // Cart
     document.getElementById('cartBtn')?.addEventListener('click', () => {
@@ -345,7 +445,7 @@ class HonestPharmcoApp {
     });
 
     // Admin handlers
-    if (this.user.role === 'admin') {
+    if (this.user?.role === 'admin') {
       document.getElementById('uploadInventoryBtn')?.addEventListener('click', () => {
         this.uploadInventory();
       });
@@ -357,14 +457,15 @@ class HonestPharmcoApp {
       document.getElementById('viewOrdersBtn')?.addEventListener('click', () => {
         this.loadOrders();
       });
-
-      // Load admin data
-      this.loadPendingUsers();
-      this.loadOrders();
-    } else {
-      // Load customer data
-      this.loadMyOrders();
     }
+  }
+
+  showLoginModal() {
+    document.getElementById('loginModal')?.classList.remove('hidden');
+  }
+
+  hideLoginModal() {
+    document.getElementById('loginModal')?.classList.add('hidden');
   }
 
   async login(credentials) {
@@ -376,6 +477,7 @@ class HonestPharmcoApp {
         localStorage.setItem('token', this.token);
         localStorage.setItem('user', JSON.stringify(this.user));
         axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+        this.hideLoginModal();
         this.render();
       }
     } catch (error) {
@@ -421,38 +523,65 @@ class HonestPharmcoApp {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
 
-    grid.innerHTML = this.products.map(product => `
-      <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-4">
-        <div class="mb-3">
-          <h3 class="font-semibold text-gray-800 text-sm mb-1">${product.product_name}</h3>
-          ${product.strain ? `<p class="text-xs text-gray-600">${product.strain}</p>` : ''}
-        </div>
-        <div class="space-y-2 mb-4">
-          ${product.thc_percentage ? `
-            <div class="flex items-center text-xs">
-              <span class="text-gray-500">THC:</span>
-              <span class="ml-2 font-medium">${product.thc_percentage}</span>
+    const isLoggedIn = !!this.token && !!this.user;
+
+    grid.innerHTML = this.products.map(product => {
+      // Determine category icon
+      let categoryIcon = 'fas fa-cannabis';
+      if (product.category === 'Pre-rolls') categoryIcon = 'fas fa-joint';
+      else if (product.category === 'Tinctures') categoryIcon = 'fas fa-tint';
+      else if (product.category === 'Vapes') categoryIcon = 'fas fa-wind';
+      else if (product.category === 'Edibles') categoryIcon = 'fas fa-cookie-bite';
+
+      return `
+        <div class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow p-5 border border-gray-200">
+          <div class="mb-3">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-green-600 uppercase tracking-wider">${product.category || 'Product'}</span>
+              <i class="${categoryIcon} text-gray-400"></i>
             </div>
-          ` : ''}
-          ${product.case_size ? `
-            <div class="flex items-center text-xs">
-              <span class="text-gray-500">Case Size:</span>
-              <span class="ml-2 font-medium">${product.case_size}</span>
-            </div>
-          ` : ''}
+            <h3 class="font-bold text-gray-800 text-sm mb-1 line-clamp-2">${product.product_name}</h3>
+            ${product.strain ? `<p class="text-xs text-gray-600 italic">${product.strain}</p>` : ''}
+          </div>
+          <div class="space-y-2 mb-4">
+            ${product.thc_percentage ? `
+              <div class="flex items-center text-xs bg-green-50 rounded px-2 py-1">
+                <span class="text-gray-600 font-medium">THC:</span>
+                <span class="ml-2 font-bold text-green-700">${product.thc_percentage}</span>
+              </div>
+            ` : ''}
+            ${product.case_size ? `
+              <div class="flex items-center text-xs bg-gray-50 rounded px-2 py-1">
+                <span class="text-gray-600 font-medium">Case:</span>
+                <span class="ml-2 font-bold text-gray-700">${product.case_size} units</span>
+              </div>
+            ` : ''}
+          </div>
+          <div class="flex justify-between items-center pt-3 border-t">
+            <span class="text-xl font-bold text-green-600">$${product.price}</span>
+            ${isLoggedIn ? `
+              <button onclick="app.addToCart(${product.id})" 
+                class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 text-white text-sm font-semibold rounded hover:from-green-700 hover:to-green-600 transition">
+                Add to Cart
+              </button>
+            ` : `
+              <button onclick="app.showLoginModal()" 
+                class="px-4 py-2 bg-gray-200 text-gray-600 text-sm font-semibold rounded hover:bg-gray-300 transition">
+                Login to Order
+              </button>
+            `}
+          </div>
         </div>
-        <div class="flex justify-between items-center">
-          <span class="text-lg font-bold text-green-600">$${product.price}</span>
-          <button onclick="app.addToCart(${product.id})" 
-            class="px-3 py-1 bg-gray-800 text-white text-sm rounded hover:bg-gray-700">
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   addToCart(productId) {
+    if (!this.token || !this.user) {
+      this.showLoginModal();
+      return;
+    }
+
     const product = this.products.find(p => p.id === productId);
     if (!product) return;
 
@@ -590,6 +719,8 @@ class HonestPharmcoApp {
   }
 
   async loadMyOrders() {
+    if (!this.token) return;
+    
     try {
       const response = await axios.get('/api/orders');
       const container = document.getElementById('myOrdersList');
@@ -612,9 +743,9 @@ class HonestPharmcoApp {
               </tr>
             </thead>
             <tbody>
-              ${response.data.map(order => `
+              ${response.data.slice(0, 5).map(order => `
                 <tr class="border-b">
-                  <td class="py-2">${order.order_number}</td>
+                  <td class="py-2 font-mono text-sm">${order.order_number}</td>
                   <td class="py-2">${new Date(order.created_at).toLocaleDateString()}</td>
                   <td class="py-2">
                     <span class="px-2 py-1 text-xs rounded-full ${
@@ -636,6 +767,11 @@ class HonestPharmcoApp {
     } catch (error) {
       console.error('Failed to load orders:', error);
     }
+  }
+
+  async loadAdminData() {
+    this.loadPendingUsers();
+    this.loadOrders();
   }
 
   async uploadInventory() {
@@ -733,18 +869,18 @@ class HonestPharmcoApp {
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="border-b">
-                <th class="text-left py-2">Order #</th>
+              <tr class="border-b bg-gray-50">
+                <th class="text-left py-2 px-2">Order #</th>
                 <th class="text-left py-2">Company</th>
                 <th class="text-left py-2">Date</th>
                 <th class="text-left py-2">Status</th>
-                <th class="text-right py-2">Total</th>
+                <th class="text-right py-2 px-2">Total</th>
               </tr>
             </thead>
             <tbody>
               ${response.data.map(order => `
-                <tr class="border-b">
-                  <td class="py-2">${order.order_number}</td>
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="py-2 px-2 font-mono text-sm">${order.order_number}</td>
                   <td class="py-2">${order.company_name}</td>
                   <td class="py-2">${new Date(order.created_at).toLocaleDateString()}</td>
                   <td class="py-2">
@@ -757,7 +893,7 @@ class HonestPharmcoApp {
                       <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                     </select>
                   </td>
-                  <td class="py-2 text-right font-semibold">$${order.total_amount}</td>
+                  <td class="py-2 px-2 text-right font-semibold">$${order.total_amount}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -775,12 +911,6 @@ class HonestPharmcoApp {
     this.showNotification('Order status updated', 'success');
   }
 
-  loadDashboard() {
-    if (this.token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-    }
-  }
-
   showMessage(elementId, message, type = 'info') {
     const element = document.getElementById(elementId);
     if (!element) return;
@@ -788,7 +918,7 @@ class HonestPharmcoApp {
     const colorClass = type === 'error' ? 'text-red-600' : 
                       type === 'success' ? 'text-green-600' : 'text-blue-600';
     
-    element.innerHTML = `<p class="${colorClass} text-sm">${message}</p>`;
+    element.innerHTML = `<p class="${colorClass} text-sm mt-2">${message}</p>`;
   }
 
   showNotification(message, type = 'info') {
@@ -796,7 +926,7 @@ class HonestPharmcoApp {
     const bgColor = type === 'error' ? 'bg-red-500' : 
                    type === 'success' ? 'bg-green-500' : 'bg-blue-500';
     
-    notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+    notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse`;
     notification.textContent = message;
     document.body.appendChild(notification);
     
@@ -809,4 +939,10 @@ class HonestPharmcoApp {
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new HonestPharmcoApp();
+
+  // Set up axios defaults if token exists
+  const token = localStorage.getItem('token');
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
 });
