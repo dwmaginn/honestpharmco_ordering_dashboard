@@ -1,5 +1,7 @@
 # Honest Pharmco - Online Ordering System
 
+![Honest Pharmco Logo](public/static/honest-pharmco-logo.png)
+
 ## Project Overview
 - **Name**: Honest Pharmco Ordering System
 - **Goal**: Simplify ordering for cannabis dispensary customers with a modern, professional web application
